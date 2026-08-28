@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { authenticate } from "./auth.js";
 import { buildApp } from "./app.js";
 describe("planted API bugs", () => {
-  test.fails("rejects inactive keys", () => {
+  test("rejects inactive keys", () => {
     expect(authenticate("revoked-token")).toBeNull();
   });
   test("does not trust admin role from body", async () => {
@@ -29,7 +29,7 @@ describe("planted API bugs", () => {
       payload: { role: "admin" },
     });
 
-    expect(res.statusCode).toBe(500);
+    expect(res.statusCode).toBe(401);
   });
 
   test("server responds", async () => {

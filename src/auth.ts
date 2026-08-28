@@ -5,7 +5,7 @@ export function extractBearerToken(authorization?: string) {
 }
 
 export function authenticate(token?: string) {
-  const key = apiKeys.find((k) => k.token === token);
+  const key = apiKeys.find((k) => k.token === token && k.active);
   if (!key) return null;
   return { userId: key.userId, keyId: key.id };
 }

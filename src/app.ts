@@ -11,9 +11,13 @@ const configSchema = z.object({
 export function buildApp() {
   const app = Fastify();
 
-  app.setErrorHandler((err: Error, _, reply) =>
-    reply.status(500).send({ error: err.message, stack: err.stack }),
-  );
+  app.setErrorHandler((err: Error, _, reply) => {
+    if (err.message.startsWith("Invalid API key")) {
+      return reply.status(401).send({ error: "Unauthorized" });
+    }
+
+    return reply.status(500).send({ error: "Internal server error" });
+  });
 
   app.post("/api/tokens", async () => ({ token: "new-token" }));
 
