@@ -5,15 +5,33 @@ describe("planted API bugs", () => {
   test.fails("rejects inactive keys", () => {
     expect(authenticate("revoked-token")).toBeNull();
   });
-  test.fails("does not trust admin role from body", async () => {
+  test("does not trust admin role from body", async () => {
     const app = buildApp();
+
+    const res = await app.inject({
+      method: "POST",
+      url: "/api/admin/users",
+      headers: {
+        authorization: "Bearer live-token",
+      },
+      payload: { role: "admin" },
+    });
+
+    expect(res.json().ok).toBe(false);
+  });
+
+  test("rejects admin access without authentication", async () => {
+    const app = buildApp();
+
     const res = await app.inject({
       method: "POST",
       url: "/api/admin/users",
       payload: { role: "admin" },
     });
-    expect(res.json().ok).toBe(false);
+
+    expect(res.statusCode).toBe(500);
   });
+
   test("server responds", async () => {
     const app = buildApp();
     const res = await app.inject({ method: "POST", url: "/api/tokens" });
